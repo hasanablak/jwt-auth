@@ -1,0 +1,29 @@
+{
+	"name": "hasanablak/jwt-auth",
+	"autoload": {
+		"psr-4": {
+			"Hasanablak\\JwtAuth\\": "src/"
+		},
+		"files": [
+			"src/Supports/helpers.php"
+		]
+	},
+	"authors": [
+		{
+			"name": "hasanablak",
+			"email": "0hasanablak@gmail.com"
+		}
+	],
+	"require": {
+		"php": "^8.1",
+		"illuminate/support": "^9.0",
+		"php-open-source-saver/jwt-auth": "^2.0"
+	},
+	"extra": {
+		"laravel": {
+			"providers": [
+				"Hasanablak\\JwtAuth\\Providers\\JwtAuthServiceProvider"
+			]
+		}
+	}
+}
