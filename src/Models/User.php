@@ -67,7 +67,8 @@ class User extends Authenticatable implements JWTSubject
 	protected function settings(): Attribute
 	{
 		return Attribute::make(
-			get: fn ($value, $attributes) => new Test
+			get: fn ($value, $attributes) => new Test($attributes["id"])
+			//get: fn ($value, $attributes) => settingsMap($attributes["id"], false)
 		);
 	}
 

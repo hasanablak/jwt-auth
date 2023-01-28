@@ -64,7 +64,7 @@ class TwoFaMailVerification extends Controller
 
 			return response(new AuthResource($token));
 		} catch (\Exception	$e) {
-			return response($this->fails($e->getMessage()));
+			return response($this->sendMail->fails($e->getMessage()));
 		}
 	}
 }
