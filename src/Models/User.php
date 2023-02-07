@@ -105,6 +105,7 @@ class User extends Authenticatable implements JWTSubject
 			//$trade->slug = Str::random(40);
 
 			$user->username = $username = $usernameCount > 0 ? $username . $usernameCount : $username;
+			$user->avatar = '/storage/avatar/default.png';
 		});
 	}
 

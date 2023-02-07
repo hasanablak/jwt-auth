@@ -31,6 +31,10 @@ Route::group(['prefix' => 'api', 'middleware' => [LocalizationMiddleware::class]
 		->middleware([BasicTokenMiddleware::class, TwoFaValidateMiddleware::class])
 		->name('auth.update');
 
+	Route::post('auth/check-username', [AuthController::class, "checkUsername"])
+		->middleware([BasicTokenMiddleware::class, TwoFaValidateMiddleware::class])
+		->name('auth.check-username');
+
 	Route::get('auth/settings', [AuthController::class, "settingsGet"])
 		->middleware([BasicTokenMiddleware::class, TwoFaValidateMiddleware::class])
 		->name('auth.update');

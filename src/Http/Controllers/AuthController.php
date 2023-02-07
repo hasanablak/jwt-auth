@@ -192,14 +192,17 @@ class AuthController extends Controller
 			"avatar"	=> ['max:5000'],
 			"name"		=> ['required'],
 			"surname"	=> ['required'],
-			"username"	=> ['required', "unique:users,username," . auth('api')->id()],
+			"username"	=>	["required", "min:3", "alpha_dash", "max:15", "unique:users,username," . auth('api')->id()],
 			//"password"	=> ['confirmed', 'string', 'min:6', 'current_password:api'],
 			"password"	=> ['confirmed', 'string', 'min:6'],
 			"current_password" => ['current_password:api', 'required_with:password']
 		]);
 
 		if ($request->avatar) {
-			$realName = Storage::disk('avatar')->put('', $request->avatar);
+			$realName = 'default.png';
+			if ($request->avatar != 'deleted') {
+				$realName = Storage::disk('avatar')->put('', $request->avatar);
+			}
 
 			User::where('id', auth('api')->id())
 				->update([
@@ -230,6 +233,15 @@ class AuthController extends Controller
 		]);
 	}
 
+	public function checkUsername(Request $request)
+	{
+		$request->validate([
+			"username"	=>	["required", "min:3", "alpha_dash:ascii", "max:15", "unique:users,username," . auth('api')->id()],
+		]);
+		return response([
+			"status"	=>	"success"
+		]);
+	}
 
 	public function settingsGet()
 	{
