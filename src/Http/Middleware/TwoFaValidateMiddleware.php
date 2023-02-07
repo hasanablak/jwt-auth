@@ -19,14 +19,17 @@ class TwoFaValidateMiddleware
 	{
 		$jwt = auth('api')->payload()->toArray();
 		$validator = Validator::make(
-			$jwt,
 			[
-				'mail_verify_status'	=>	"in:1",
+				...$jwt,
+				"verify_total" => $jwt['mail_verify_status'] + $jwt['gsm_verify_status']
+			],
+			[
+				'verify_total'	=>	"min:0",
 				'two_fa_mail_settings'	=>	"in:" . $jwt["two_fa_mail_status"],
 				'two_fa_gsm_settings'	=>	"in:" . $jwt["two_fa_gsm_status"]
 			],
 			[
-				"mail_verify_status.in"		=>	"Need email verify.",
+				"verify_total.in"		=>	"Need email verify.",
 				"two_fa_mail_settings.in"	=>	"Two factor authentication failed. Mail",
 				"two_fa_gsm_settings.in"	=>	"Two factor authentication failed. Gsm"
 			]

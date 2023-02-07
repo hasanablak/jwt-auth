@@ -2,69 +2,44 @@
 
 namespace Hasanablak\JwtAuth\Http\Controllers;
 
-use	App\Http\Controllers\Controller;
-use	Illuminate\Http\Request;
-
-use	Hasanablak\JwtAuth\Models\LogSendOut;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Hasanablak\JwtAuth\Http\Resources\AuthResource;
-use Hasanablak\JwtAuth\Http\Interfaces\IForSendMail;
+use Hasanablak\JwtAuth\Notifications\TwoFaMail;
+use Hasanablak\JwtAuth\Models\Notification;
 
 class TwoFaMailVerification extends Controller
 {
-	public $sendMail;
 
-	public function __construct(IForSendMail $sendMail)
+	public function codeSend()
 	{
-		$this->sendMail = $sendMail;
-		$this->sendMail->type = '3';
+		auth('api')->user()->notify(new TwoFaMail());
+
+		return response([
+			"status"	=>	"success"
+		]);
 	}
 
-	public function	codeSend(Request $request)
-	{
-		try {
-			$request->validate(["type" => "required|in:" . $this->sendMail->type]);
-
-			$useData["view"]		= 'jwt-auth::emails.two_fa_email';
-			$useData["email"]		= auth('api')->user()->email;
-			$useData["title"]		= 'Two Fa Title';
-			$useData["subject"]		= 'Two Fa Subject';
-
-			$data["randomCode"]		= rand(100000, 999999);
-			$data["status"]			= "waiting";
-			$data["email"]			= auth('api')->user()->email;
-
-			$log	= $this->sendMail->send($useData, $data);
-
-			return response($this->sendMail->success("ok", ["log_send_out_id"  => $log->id]));
-		} catch (\Exception	$e) {
-			return response($this->sendMail->fails($e->getMessage()));
-		}
-	}
-
-	public function codeConfirm(Request	$request)
+	public function codeConfirm(Request $request)
 	{
 		$request->validate([
-			"log_send_out_id"	=>	"required",
 			"code"			=>	"required"
 		]);
 
-		try {
+		$logSendOutQuery = Notification::control(
+			type: 'Hasanablak\JwtAuth\Notifications\TwoFaMail',
+			status: 'waiting',
+			code: $request->code,
+			notifiable_id: auth('api')->id()
+		);
 
-			$log_mailQuery = LogSendOut::where('user_id',	auth('api')->id())
-				->where('type_id', $this->sendMail->type)
-				->where('id', $request->log_send_out_id)
-				->whereJsonContains('data->status',	'waiting')
-				->whereJsonContains('data->randomCode',	intval($request->code));
+		$logSendOutQuery->firstOrFail();
 
-			$log_mailQuery->firstOrFail();
+		$logSendOutQuery->update(["data->status" => "finished"]);
 
-			$log_mailQuery->update(["data->status" => "finished"]);
 
-			$token = auth('api')->claims(["two_fa_mail_status" => "1"])->refresh();
+		$token = auth('api')->claims(["two_fa_mail_status" => "1"])->refresh();
 
-			return response(new AuthResource($token));
-		} catch (\Exception	$e) {
-			return response($this->sendMail->fails($e->getMessage()));
-		}
+		return response(new AuthResource($token));
 	}
 }

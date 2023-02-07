@@ -19,14 +19,13 @@
 					<div style="text-align:left; margin: 0 20px; padding: 40px;	background-color:#ffffff; border-radius: 6px">
 						<!--begin:Email	content-->
 						<div style="padding-bottom:	30px; font-size: 17px;">
-							<strong>Hoşgeldin {{$email}}!</strong>
+							<strong>E-posta doğrulama</strong>
 						</div>
 						<div style="padding-bottom:	30px">
-							Hesabınızı etkinleştirmek ve e-posta adresinizi doğrulamak için lütfen aşağıdaki kodu ilgili alana yazınız. 
-							Etkinleştirildiğinde, ücretsiz ve premium modüllerimize tam erişime sahip olacaksınız.
+							Yeni e-posta hesabınızı doğrulamak için aşağıdaki kodu ilgili alana yazınız.
 						</div>
 						<div style="padding-bottom:	40px; text-align:center;">
-							{{$randomCode}}
+							{{$code}}
 						</div>
 						<div style="border-bottom: 1px solid #eeeeee; margin: 15px 0"></div>
 						<!--end:Email content-->

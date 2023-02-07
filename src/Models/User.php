@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\Hash;
 use Hasanablak\JwtAuth\Notifications\ResetPassword;
 use Illuminate\Support\Str;
 use Hasanablak\JwtAuth\Supports\Test;
+use Hasanablak\JwtAuth\Http\Interfaces\IForSendSms;
+use Illuminate\Support\Facades\Notification;
+
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -28,6 +31,8 @@ class User extends Authenticatable implements JWTSubject
 		'surname',
 		'email',
 		'password',
+		'gsm',
+		'gsm_dial_code'
 	];
 	/**
 	 * The attributes that should be hidden for serialization.
@@ -46,6 +51,7 @@ class User extends Authenticatable implements JWTSubject
 	 */
 	protected $casts = [
 		'email_verified_at' => 'datetime',
+		'gsm_verified_at' => 'datetime',
 	];
 
 	public function getJWTIdentifier()
@@ -60,7 +66,8 @@ class User extends Authenticatable implements JWTSubject
 			"two_fa_gsm_settings" => $this->settingsAll->two_fa_gsm ?? '0',
 			"two_fa_mail_status" =>	"0",
 			"two_fa_gsm_status" =>	"0",
-			"mail_verify_status" => !is_null($this->email_verified_at) ? "1" : "0"
+			"mail_verify_status" => !is_null($this->email_verified_at) ? "1" : (is_null($this->email) ? "-1" : "0"),
+			"gsm_verify_status" => !is_null($this->gsm_verified_at) ? "1" : (is_null($this->gsm) ? "-1" : "0"),
 		];
 	}
 
@@ -104,9 +111,7 @@ class User extends Authenticatable implements JWTSubject
 	public function sendPasswordResetNotification($token)
 	{
 		$this->notify(new ResetPassword($token));
-	}
 
-	public function scopeSetting($query)
-	{
+		//Notification::send($this, new ResetPassword($token));
 	}
 }

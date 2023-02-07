@@ -2,11 +2,13 @@
 
 namespace Hasanablak\JwtAuth\Http\Interfaces;
 
+use Illuminate\Notifications\Notification;
 use Hasanablak\JwtAuth\Models\LogSendOut;
+use Hasanablak\JwtAuth\Notifications\RegistrationGsmVerification;
 
-interface IForSendSms
+interface IForSendSmsNew
 {
-	public function send(array $data);
+	public function send($notifiable, RegistrationGsmVerification $notification);
 
 	public function log(mixed $logData = []): LogSendOut;
 

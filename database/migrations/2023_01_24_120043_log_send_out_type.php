@@ -20,7 +20,8 @@ return new class extends Migration
 		"Email sent to old email after email change",
 		"Send code to current gsm",
 		"Send code to new gsm",
-		"Two Factor GSM Auth"
+		"Two Factor GSM Auth",
+		"Sign In Confirm Gsm",
 	];
 
 	public function up()

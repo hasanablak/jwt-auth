@@ -90,6 +90,7 @@ settings map var.
 # 2
 ## E-posta değiştirme
 ## Gsm değiştirme
+## Settings güncelleme
 
 # 3
 ## Google ile giriş

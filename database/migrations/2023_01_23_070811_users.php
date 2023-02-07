@@ -14,10 +14,17 @@ return new class extends Migration
 	 */
 	public function up()
 	{
+		Schema::table('users', function ($table) {
+			$table->dropColumn('email');
+		});
+
 		Schema::table('users', function (Blueprint $table) {
 			$table->string('surname');
 			$table->string('username')->unique();
 			$table->string('avatar')->nullable();
+			$table->string('email')->nullable()->unique();
+			$table->string('gsm')->nullable()->unique();
+			$table->timestamp('gsm_verified_at')->nullable();
 		});
 
 		User::create([

@@ -2,43 +2,51 @@
 
 namespace Hasanablak\JwtAuth\Http\Repositories\ForSendSms;
 
-use Hasanablak\JwtAuth\Http\Interfaces\IForSendSms;
+use Hasanablak\JwtAuth\Http\Interfaces\IForSendSmsNew;
 use	Hasanablak\JwtAuth\Models\LogSendOut;
+use Illuminate\Notifications\Notification;
 use	Illuminate\Support\Facades\Http;
+use ReflectionClass;
+use Illuminate\Notifications\AnonymousNotifiable;
+use Illuminate\Database\Eloquent\Model;
 
-
-class Whatsapp implements IForSendSms
+class Test
 {
+	public $sms;
+}
 
-	public function __construct()
-	{
-
-		//dd(debug_backtrace()[1], "Whatsapp.php");
-		//dd("Repositoryies Whatsapp.php forsendSms dir");
-	}
-	public $type = 1;
+class WhatsappNew
+{
 
 	public $channel	= 'send-whatsapp-message';
 
-	public function	send($data)
+	public function send($notifiable, Notification $notification)
 	{
-		$data["gsm"] = "905510898465";
-		$data["message"] = "Merhaba";
+		if ((new ReflectionClass(AnonymousNotifiable::class))->getName() == get_class($notifiable)) {
+			$gsm = $notifiable?->routes["gsm"];
+		} else {
+			$gsm = $notifiable?->gsm;
+		}
 
 		$arr = [
-			'number' => $data["gsm"],
-			'message' => $data["message"],
+			'number' =>  $gsm,
+			'message' => $notification->toSms($notifiable)->message,
 		];
 
 		$response =	Http::baseUrl(env('GSM_SEND_HOST'))
 			->post($this->channel, $arr);
 
-
-		$res = json_decode($response->body());
+		//$res = json_decode($response->body());
+		/*
 		if (isset($res->status)	&& $res->status	== 'success') {
+
+			$logSendOut = $this->log([
+				"user"	=>	$notifiable,
+				"type"	=>	$notification->type
+			]);
 			return (object)	[
 				"status"			=>	"success",
-				"log_send_out_id"	=>	$this->log($data)->id,
+				"log_send_out_id"	=>	$this->log($res)->id,
 				"body"				=>	$response->body()
 			];
 		} else {
@@ -47,6 +55,7 @@ class Whatsapp implements IForSendSms
 				"message" => isset($res->message) ?	$res->message :	''
 			];
 		}
+		*/
 	}
 
 	public function log(mixed $logData = []): LogSendOut

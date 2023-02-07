@@ -13,15 +13,17 @@ class YourPasswordHasBeedChanged extends Notification implements ShouldQueue
 
 	public string $browser;
 	public string $ipAddress;
+	public string $channel;
 	/**
 	 * Create a new notification instance.
 	 *
 	 * @return void
 	 */
-	public function __construct($browser, $ipAddress)
+	public function __construct($channel, $browser, $ip)
 	{
+		$this->channel = $channel;
 		$this->browser = $browser;
-		$this->ipAddress = $ipAddress;
+		$this->ipAddress = $ip;
 	}
 
 	/**
@@ -32,7 +34,7 @@ class YourPasswordHasBeedChanged extends Notification implements ShouldQueue
 	 */
 	public function via($notifiable)
 	{
-		return ['mail'];
+		return [$this->channel];
 	}
 
 	/**
@@ -44,11 +46,11 @@ class YourPasswordHasBeedChanged extends Notification implements ShouldQueue
 	public function toMail($notifiable)
 	{
 		return (new MailMessage)
-			->line('Dear ' . $notifiable->name . ' ' . $notifiable->surname)
-			->line('Your password has been changed from the IP address: ' . $this->ipAddress)
-			->line($this->browser);
-		#->action('Notification Action', url('/'))
-		#->line('Thank you for using our application!');
+			->subject(__('jwt-auth.reset-password.your-password-has-been-changed.subject'))
+			->greeting(__('jwt-auth.reset-password.your-password-has-been-changed.greeting'))
+			->line(__('jwt-auth.dear') . ' ' . $notifiable->name . ' ' . $notifiable->surname . ',')
+			->line(__('jwt-auth.reset-password.your-password-has-been-changed-with-this-ip') . ' ' . $this->ipAddress)
+			->line(__('jwt-auth.reset-password.your-password-has-been-changed-with-this-browser') . ' ' . $this->browser);
 	}
 
 	/**
@@ -57,6 +59,19 @@ class YourPasswordHasBeedChanged extends Notification implements ShouldQueue
 	 * @param  mixed  $notifiable
 	 * @return array
 	 */
+
+	public function toSms($notifiable)
+	{
+		return (object) [
+			"message"	=>
+			__('jwt-auth.dear') . ' ' . $notifiable->name . ' ' . $notifiable->surname . ','
+				. PHP_EOL .
+				__('jwt-auth.reset-password.your-password-has-been-changed-with-this-ip') . ' ' . $this->ipAddress
+				. PHP_EOL .
+				__('jwt-auth.reset-password.your-password-has-been-changed-with-this-browser') . ' ' . $this->browser
+		];
+	}
+
 	public function toArray($notifiable)
 	{
 		return [

@@ -33,14 +33,13 @@ class AuthResource extends JsonResource
 			"status"	=>	"success",
 			"token"		=>	'Bearer ' . $this->token
 		];
-
 		if (
 			$this->decodedToken->two_fa_gsm_settings == $this->decodedToken->two_fa_gsm_status
 			&& $this->decodedToken->two_fa_mail_settings == $this->decodedToken->two_fa_mail_status
-			&& $this->decodedToken->mail_verify_status
+			&& ($this->decodedToken->mail_verify_status == "1" || $this->decodedToken->gsm_verify_status == "1")
 		) {
-			$returnArray["auth"] = auth('api')->user();
-			$returnArray["auth"]["settings"] = auth('api')->user()->settingsAll;
+			$returnArray["user"] = auth('api')->user();
+			$returnArray["user"]["settings"] = auth('api')->user()->settingsAll;
 		}
 		return $returnArray;
 	}

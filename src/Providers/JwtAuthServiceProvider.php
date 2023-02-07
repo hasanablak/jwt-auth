@@ -2,12 +2,16 @@
 
 namespace Hasanablak\JwtAuth\Providers;
 
+use Hasanablak\JwtAuth\Channels\Database;
 use Hasanablak\JwtAuth\Http\Interfaces\IForSendSms;
 use Hasanablak\JwtAuth\Http\Interfaces\IForSendMail;
 use Hasanablak\JwtAuth\Http\Repositories\ForSendSms\Whatsapp;
+use Hasanablak\JwtAuth\Http\Repositories\ForSendSms\WhatsappNew;
 use Hasanablak\JwtAuth\Http\Repositories\ForSendSms\SmsPaketim;
 use Hasanablak\JwtAuth\Http\Repositories\ForSendMail;
 use Illuminate\Support\ServiceProvider;
+use Hasanablak\JwtAuth\Supports\Test2;
+use Illuminate\Support\Facades\Notification;
 
 class JwtAuthServiceProvider extends ServiceProvider
 {
@@ -17,19 +21,34 @@ class JwtAuthServiceProvider extends ServiceProvider
 		$this->loadViewsFrom(__DIR__ . '/../../resources/views', 'jwt-auth');
 		$this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
 
+		/*
 		$this->app->singleton(IForSendMail::class, function ($app) {
 			return new ForSendMail;
 		});
+		*/
+		//$this->app->singleton(IForSendSms::class, Whatsapp::class);
 
-		$this->app->singleton(IForSendSms::class, function ($app) {
-			return new Whatsapp;
-			//return new SmsPaketim;
+
+
+		Notification::extend('sms', function ($app) {
+			return new WhatsappNew();
 		});
-
+		/*
+			database olarak genişlettiğimizde NotificationSender.php'deki 102. satır yüzünden
+			es geçiliyor.
+			o yüzden _database yapmak zorunda kalıyoruz.
+		*/
+		Notification::extend('_database', function ($app) {
+			return new Database();
+		});
 
 		$this->publishes([
 			__DIR__ . '/../../resources/views/' => resource_path('views/vendor/jwt-auth'),
 		], 'jwt-auth-views');
+
+		$this->publishes([
+			__DIR__ . '/../../lang/' => lang_path()
+		], 'jwt-auth-lang');
 
 
 		// $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'test-package');

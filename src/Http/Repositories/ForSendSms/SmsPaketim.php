@@ -7,17 +7,18 @@ use	Hasanablak\JwtAuth\Models\LogSendOut;
 
 class SmsPaketim implements IForSendSms
 {
-	public $type = 0;
+	public $type = 1;
 
 	public $channel	= 'api/mesaj_gonder';
 
 	public function	send($data)
 	{
-		$sms_user 	= 'xxx';
-		$sms_pass 	= 'xxx';
-		$sms_title 	= 'xxx';
+		$sms_user 	= '5399771515';
+		$sms_pass 	= '9771515';
+		$sms_title 	= 'SAYEM';
 
-
+		$data['message'] = 'Beni düzenle! SmsPaketim.php';
+		$data['number'] = '905510898465';
 
 		$gonder = '<Message><Mesgbody>'
 			. $data['message']
@@ -59,10 +60,10 @@ class SmsPaketim implements IForSendSms
 		}
 	}
 
-	public function log(array $logData): LogSendOut
+	public function log(mixed $logData = []): LogSendOut
 	{
 		$log = new LogSendOut;
-		$log->user_id = auth('api')->id();
+		$log->user_id = auth('api')->id() ?: '2';
 		$log->type_id = $this->type;
 		$log->data = json_encode($logData);
 		$log->save();

@@ -8,10 +8,8 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
 	public $currentSettings = [
-		"gsm"	=>	"5510898465",
-		"gsm_dial_code"	=>	"90",
 		"two_fa_gsm"	=>	"1",
-		"two_fa_sms"	=>	"1"
+		"two_fa_mail"	=>	"1"
 	];
 	/**
 	 * Run the migrations.
@@ -26,7 +24,7 @@ return new class extends Migration
 			$table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
 			$table->string('key');
 			$table->string('value');
-			$table->integer("is_hidden");
+			$table->integer("is_hidden")->default(0);
 			$table->timestamps();
 		});
 
