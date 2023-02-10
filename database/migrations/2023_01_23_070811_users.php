@@ -25,14 +25,18 @@ return new class extends Migration
 			$table->string('email')->nullable()->unique();
 			$table->string('gsm')->nullable()->unique();
 			$table->timestamp('gsm_verified_at')->nullable();
+			$table->boolean('is_admin')->default(0);
 		});
 
-		User::create([
-			"name"	=>	"Hasan",
-			"surname"	=>	"Ablak",
-			"email"	=>	"0hasanablak@gmail.com",
-			"password"	=>	"123456"
+		$user = User::create([
+			"name"	=>	"Yönetici",
+			"surname"	=>	"Admin",
+			"email"	=>	"yoneticiadmin@xxx.com",
+			"password"	=>	"123456",
+			"is_admin"	=> 1
 		]);
+		$user->email_verified_at = now();
+		$user->save();
 	}
 
 	/**

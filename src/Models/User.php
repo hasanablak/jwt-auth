@@ -32,7 +32,7 @@ class User extends Authenticatable implements JWTSubject
 		'email',
 		'password',
 		'gsm',
-		'gsm_dial_code'
+		'is_admin'
 	];
 	/**
 	 * The attributes that should be hidden for serialization.

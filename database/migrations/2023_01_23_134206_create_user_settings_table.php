@@ -9,7 +9,9 @@ return new class extends Migration
 {
 	public $currentSettings = [
 		"two_fa_gsm"	=>	"1",
-		"two_fa_mail"	=>	"1"
+		"two_fa_mail"	=>	"1",
+		"countries"		=>	"90",
+		"language"		=>	"tr"
 	];
 	/**
 	 * Run the migrations.
@@ -24,7 +26,7 @@ return new class extends Migration
 			$table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
 			$table->string('key');
 			$table->string('value');
-			$table->integer("is_hidden")->default(0);
+			$table->boolean("is_hidden")->default(0);
 			$table->timestamps();
 		});
 

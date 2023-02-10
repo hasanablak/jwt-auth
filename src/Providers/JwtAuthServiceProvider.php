@@ -10,7 +10,6 @@ use Hasanablak\JwtAuth\Http\Repositories\ForSendSms\WhatsappNew;
 use Hasanablak\JwtAuth\Http\Repositories\ForSendSms\SmsPaketim;
 use Hasanablak\JwtAuth\Http\Repositories\ForSendMail;
 use Illuminate\Support\ServiceProvider;
-use Hasanablak\JwtAuth\Supports\Test2;
 use Illuminate\Support\Facades\Notification;
 
 class JwtAuthServiceProvider extends ServiceProvider

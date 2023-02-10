@@ -2,18 +2,12 @@
 
 namespace Hasanablak\JwtAuth\Http\Repositories\ForSendSms;
 
-use Hasanablak\JwtAuth\Http\Interfaces\IForSendSmsNew;
 use	Hasanablak\JwtAuth\Models\LogSendOut;
 use Illuminate\Notifications\Notification;
 use	Illuminate\Support\Facades\Http;
 use ReflectionClass;
 use Illuminate\Notifications\AnonymousNotifiable;
-use Illuminate\Database\Eloquent\Model;
 
-class Test
-{
-	public $sms;
-}
 
 class WhatsappNew
 {
