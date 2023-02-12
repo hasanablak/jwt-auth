@@ -50,7 +50,7 @@ class RegistrationEmailVerification extends Notification implements ShouldQueue
 			->greeting(__('jwt-auth.registration.email.verification.greeting'))
 			->line(__('jwt-auth.registration.email.verification.line1'))
 			->line(__('jwt-auth.registration.email.verification.line2'))
-			->line(new HtmlString('<strong><center>' . $this->mailData->code . '</center></strong>'))
+			->line(new HtmlString('<h1><center>' . $this->mailData->code . '</center></h1>'))
 			->line(env('APP_NAME') . ' ' . __('jwt-auth.registration.email.verification.line4'));
 	}
 
