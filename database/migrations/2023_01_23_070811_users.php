@@ -16,10 +16,12 @@ return new class extends Migration
 	{
 		Schema::table('users', function ($table) {
 			$table->dropColumn('email');
+			$table->dropColumn('name');
 		});
 
 		Schema::table('users', function (Blueprint $table) {
-			$table->string('surname');
+			$table->string('surname')->nullable();
+			$table->string('name')->nullable();
 			$table->string('username')->unique();
 			$table->string('avatar')->nullable();
 			$table->string('email')->nullable()->unique();
