@@ -23,51 +23,25 @@ use Hasanablak\JwtAuth\Notifications\ResetPassword;
 
 class AuthController extends Controller
 {
-	public $sendSms;
-
-	public function __construct(IForSendSms $sendSms)
-	{
-		$this->sendSms = $sendSms;
-	}
 	public function register(Request $request)
 	{
 		$request->validate([
 			'email'			=> [Rule::requiredIf(fn () => !request()->has('gsm')), 'email', 'max:64', 'unique:users'],
 			'password'		=> 'required|string|min:6|confirmed',
-			'name'			=> 'required|string',
-			'surname'		=> 'required|string',
+			#'name'			=> 'required|string',
+			#'surname'		=> 'required|string',
 			'gsm'			=> [
 				Rule::requiredIf(fn () => !request()->has('email')),
 				'unique:users',
-				//'numeric',
 				'regex:/^([0-9\s\-\+\(\)]*)$/',
 				'size:12'
 			]
 		]);
 
-		//$request['email'] = $request->email ?: trim($request->gsm_dial_code . $request->gsm);
 
 		User::create($request->all());
 
-		/*
-		foreach ($request->only(['gsm', 'gsm_dial_code']) as $key => $value) {
-			UserSetting::create([
-				"user_id"	=>	$user->id,
-				"key"		=>	$key,
-				"value"		=>	$value
-			]);
-		}
-		*/
 
-
-		//$user = $this->userRepository->create($request->all());
-
-		//event(new UserRegister($user));
-		// BURASI TEST EDİLMESİ LAZIM
-		/* 
-			ADAMIN E-POSTASI VE TELEFON NUMARASI VAR İSE VE 
-			AŞAĞIDAKİ GİBİ Bİ DURUM VAR VE KULLANICI SADECE EPOSTAYI YA DA SADECE GSM&DIAL_CODE GİRDİ NE OLUYOR? 
-		*/
 		$credentials = $request->only('email', 'gsm', 'gsm_dial_code', 'password');
 
 		$token = auth('api')->attempt($credentials);
