@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
 	public $currentSettings = [
-		"two_fa_gsm"	=>	"1",
-		"two_fa_mail"	=>	"1",
+		"two_fa_gsm"	=>	"0",
+		"two_fa_mail"	=>	"0",
 		"countries"		=>	"90",
 		"language"		=>	"tr"
 	];
