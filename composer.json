@@ -16,8 +16,8 @@
 	],
 	"require": {
 		"php": "^8.1",
-		"illuminate/support": "^9.0",
-		"php-open-source-saver/jwt-auth": "^2.0"
+		"illuminate/support": "^10.0",
+		"php-open-source-saver/jwt-auth": "dev-main"
 	},
 	"extra": {
 		"laravel": {
@@ -25,5 +25,12 @@
 				"Hasanablak\\JwtAuth\\Providers\\JwtAuthServiceProvider"
 			]
 		}
-	}
+	},
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "https://github.com/hasanablak/jwt-auth-laravel-10"
+		}
+	],
+	"minimum-stability": "dev"
 }
