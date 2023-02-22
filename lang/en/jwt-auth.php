@@ -30,7 +30,7 @@ return [
 	"reset-password-email.line4" => "wish good luck",
 	"reset-password.gsm.message" => "Your password reset code:",
 	"registration.gsm.verification"	=>	"Your registration gsm verification code is: ",
-	"registration.email.verification.subject"	=>	"E-mail verification",
+	"registration.email.verification.subject"	=>	"E-mail verification :email",
 	"registration.email.verification.greeting"	=>	"Welcome!",
 	"registration.email.verification.line1"	=>	"Write the following verification code in the relevant field",
 	"registration.email.verification.line2"	=>	"Your e-mail verification code:",

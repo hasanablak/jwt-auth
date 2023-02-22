@@ -43,10 +43,10 @@ class RegistrationEmailVerification extends Notification implements ShouldQueue
 		return ['mail', 'database'];
 	}
 
-	public function toMail()
+	public function toMail($notifiable)
 	{
 		return (new MailMessage)
-			->subject(__('jwt-auth.registration.email.verification.subject'))
+			->subject(__('jwt-auth.registration.email.verification.subject', ['email' => $notifiable->email]))
 			->greeting(__('jwt-auth.registration.email.verification.greeting'))
 			->line(__('jwt-auth.registration.email.verification.line1'))
 			->line(__('jwt-auth.registration.email.verification.line2'))

@@ -26,7 +26,7 @@ return [
 	"reset-password-email.line4" => "keyifli kullanımlar diler",
 	"reset-password.gsm.message" => "Şifre sıfırlama kodunuz:",
 	"registration.gsm.verification"	=>	"Hesabınızın telefon numarası doğrulaması için doğrulama kodunuz: ",
-	"registration.email.verification.subject"	=>	"E-posta doğrulama",
+	"registration.email.verification.subject"	=>	"E-posta doğrulama :email",
 	"registration.email.verification.greeting"	=>	"Hoşgeldiniz!",
 	"registration.email.verification.line1"	=>	"Aşağıdaki doğrulama kodunu ilgili alana yazınız",
 	"registration.email.verification.line2"	=>	"E-posta doğrulama kodunuz:",
