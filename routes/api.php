@@ -37,7 +37,7 @@ Route::group(['prefix' => 'api', 'middleware' => [LocalizationMiddleware::class]
 
 	Route::get('auth/settings', [AuthController::class, "settingsGet"])
 		->middleware([BasicTokenMiddleware::class, TwoFaValidateMiddleware::class])
-		->name('auth.update');
+		->name('auth.settings.show');
 
 	Route::patch('auth/settings', [AuthController::class, "settingsUpdate"])
 		->middleware([BasicTokenMiddleware::class, TwoFaValidateMiddleware::class])
