@@ -7,7 +7,7 @@ use Hasanablak\JwtAuth\Http\Resources\AuthResource;
 use Hasanablak\JwtAuth\Models\Notification as ModelsNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Hasanablak\JwtAuth\Models\User;
+use App\Models\User;
 use Hasanablak\JwtAuth\Notifications\YourPasswordHasBeedChanged;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
