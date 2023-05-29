@@ -98,13 +98,9 @@ class User extends Authenticatable implements JWTSubject
 	protected static function boot()
 	{
 		parent::boot();
-
 		static::creating(function ($user) {
-			$username = Str::slug($user->name . $user->surname) ?: strtolower(Str::random(5));
-			$usernameCount = User::where('username', $username)->count();
-			//$trade->slug = Str::random(40);
-
-			$user->username = $username = $usernameCount > 0 ? $username . $usernameCount + 1 : $username;
+			$user = User::select("id")->last();
+			$user->username = 'hks_user_' . $user->id + 1;
 			$user->avatar = '/storage/avatar/default.png';
 		});
 	}
