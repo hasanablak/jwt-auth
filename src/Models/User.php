@@ -99,8 +99,9 @@ class User extends Authenticatable implements JWTSubject
 	{
 		parent::boot();
 		static::creating(function ($user) {
-			$last_user = User::select("id")->last();
-			$user->username = 'hks_user_' . $last_user->id + 1;
+			$last_user = User::latest()->first(); // Son kullanıcıyı alın
+			$last_user_id = $last_user ? $last_user->id : 0; // Son kullanıcının id değerini alın veya varsayılan olarak 0 belirleyin
+			$user->username = 'hks_user_' . ($last_user_id + 1); // Kullanıcı adını oluşturun
 			$user->avatar = '/storage/avatar/default.png';
 		});
 	}
