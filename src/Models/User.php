@@ -96,15 +96,18 @@ class User extends Authenticatable implements JWTSubject
 	}
 
 	protected static function boot()
-	{
-		parent::boot();
-		static::creating(function ($user) {
-			$last_user = User::latest()->first(); // Son kullanıcıyı alın
-			$last_user_id = $last_user ? $last_user->id : 0; // Son kullanıcının id değerini alın veya varsayılan olarak 0 belirleyin
-			$user->username = 'hks_user_' . ($last_user_id + 1); // Kullanıcı adını oluşturun
-			$user->avatar = '/storage/avatar/default.png';
-		});
-	}
+    	{
+        parent::boot();
+
+        static::creating(function ($user) {
+            $username = Str::slug($user->name . $user->surname) ?: strtolower(Str::random(5));
+            $usernameCount = User::where('username', $username)->count();
+            //$trade->slug = Str::random(40);
+
+            $user->username = $username = $usernameCount > 0 ? $username . $usernameCount + 1 : $username;
+            $user->avatar = '/storage/avatar/default.png';
+        });
+    	}
 
 	public function sendPasswordResetNotification($token)
 	{
