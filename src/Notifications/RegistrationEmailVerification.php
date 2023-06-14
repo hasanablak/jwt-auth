@@ -11,51 +11,52 @@ use Illuminate\Support\HtmlString;
 
 class RegistrationEmailVerification extends Notification implements ShouldQueue
 {
-	use Queueable;
+    use Queueable;
 
-	public $notifiable;
-	public $mailData;
+    public $notifiable;
+    public $mailData;
+    public int $randomCode;
 
-	public function __construct()
-	{
-		$randCode = rand(10000, 99999);
+    public function __construct()
+    {
+        $this->randomCode = rand(10000, 99999);
 
-		$this->mailData = (object) [
-			"view"		=> 'jwt-auth::emails.change-email.send-code-to-current-email',
-			"email"		=> auth('api')->user()->email,
-			"title"		=> 'Code for change your email address',
-			"subject"	=> 'Code for change your email address',
-			"code"		=> $randCode,
-			"status"	=> "waiting"
-		];
-	}
+        $this->mailData = (object) [
+            "view"        => 'jwt-auth::emails.change-email.send-code-to-current-email',
+            "email"        => auth('api')->user()->email,
+            "title"        => 'Code for change your email address',
+            "subject"    => 'Code for change your email address',
+            "code"        => $this->randomCode,
+            "status"    => "waiting"
+        ];
+    }
 
-	/**
-	 * Get the notification's delivery channels.
-	 *
-	 * @param  mixed  $notifiable
-	 * @return array
-	 */
-	public function via($notifiable)
-	{
-		$this->notifiable = $notifiable;
+    /**
+     * Get the notification's delivery channels.
+     *
+     * @param  mixed  $notifiable
+     * @return array
+     */
+    public function via($notifiable)
+    {
+        $this->notifiable = $notifiable;
 
-		return ['mail', 'database'];
-	}
+        return ['mail', 'database'];
+    }
 
-	public function toMail($notifiable)
-	{
-		return (new MailMessage)
-			->subject(__('jwt-auth.registration.email.verification.subject', ['email' => $notifiable->email]))
-			->greeting(__('jwt-auth.registration.email.verification.greeting'))
-			->line(__('jwt-auth.registration.email.verification.line1'))
-			->line(__('jwt-auth.registration.email.verification.line2'))
-			->line(new HtmlString('<h1><center>' . $this->mailData->code . '</center></h1>'))
-			->line(env('APP_NAME') . ' ' . __('jwt-auth.registration.email.verification.line4'));
-	}
+    public function toMail($notifiable)
+    {
+        return (new MailMessage)
+            ->subject(__('jwt-auth.registration.email.verification.subject', ['email' => $notifiable->email]))
+            ->greeting(__('jwt-auth.registration.email.verification.greeting'))
+            ->line(__('jwt-auth.registration.email.verification.line1'))
+            ->line(__('jwt-auth.registration.email.verification.line2'))
+            ->line(new HtmlString('<h1><center>' . $this->mailData->code . '</center></h1>'))
+            ->line(env('APP_NAME') . ' ' . __('jwt-auth.registration.email.verification.line4'));
+    }
 
-	public function toArray()
-	{
-		return $this->mailData;
-	}
+    public function toArray()
+    {
+        return $this->mailData;
+    }
 }

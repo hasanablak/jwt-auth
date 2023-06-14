@@ -23,227 +23,233 @@ use Hasanablak\JwtAuth\Notifications\ResetPassword;
 
 class AuthController extends Controller
 {
-	public function register(Request $request)
-	{
-		$request->validate([
-			'email'			=> [Rule::requiredIf(fn () => !request()->has('gsm')), 'email', 'max:64', 'unique:users'],
-			'password'		=> 'required|string|min:6|confirmed',
-			#'name'			=> 'required|string',
-			#'surname'		=> 'required|string',
-			'gsm'			=> [
-				Rule::requiredIf(fn () => !request()->has('email')),
-				'unique:users',
-				'regex:/^([0-9\s\-\+\(\)]*)$/',
-				'size:12'
-			]
-		]);
+    public function register(Request $request)
+    {
+        $request->validate([
+            'email'            => [Rule::requiredIf(fn () => !request()->has('gsm')), 'email', 'max:64', 'unique:users'],
+            'password'        => 'required|string|min:6|confirmed',
+            #'name'			=> 'required|string',
+            #'surname'		=> 'required|string',
+            'gsm'            => [
+                Rule::requiredIf(fn () => !request()->has('email')),
+                'unique:users',
+                'regex:/^([0-9\s\-\+\(\)]*)$/',
+                'size:12'
+            ]
+        ]);
 
 
-		User::create($request->all());
+        User::create($request->all());
 
 
-		$credentials = $request->only('email', 'gsm', 'gsm_dial_code', 'password');
+        $credentials = $request->only('email', 'gsm', 'gsm_dial_code', 'password');
 
-		$token = auth('api')->attempt($credentials);
-		return response(new AuthResource($token));
-	}
+        $token = auth('api')->attempt($credentials);
+        return response(new AuthResource($token));
+    }
 
-	public function login(Request $request)
-	{
-		$request->validate([
-			'email' => [
-				Rule::requiredIf(fn () => !request()->has('gsm') && !request()->has('username')),
-				'email'
-			],
-			'gsm' => [
-				Rule::requiredIf(fn () => !request()->has('email') && !request()->has('username')),
-				'regex:/^([0-9\s\-\+\(\)]*)$/',
-				'size:12'
-			],
-			'username' => [
-				Rule::requiredIf(fn () => !request()->has('gsm') && !request()->has('email')),
-				'min:3'
-			],
-			'password' => 'required|string|min:6',
-		]);
-		$credentials = $request->only('username', 'email', 'gsm', 'password');
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email' => [
+                Rule::requiredIf(fn () => !request()->has('gsm') && !request()->has('username')),
+                'email'
+            ],
+            'gsm' => [
+                Rule::requiredIf(fn () => !request()->has('email') && !request()->has('username')),
+                'regex:/^([0-9\s\-\+\(\)]*)$/',
+                'size:12'
+            ],
+            'username' => [
+                Rule::requiredIf(fn () => !request()->has('gsm') && !request()->has('email')),
+                'min:3'
+            ],
+            'password' => 'required|string|min:6',
+        ]);
+        $credentials = $request->only('username', 'email', 'gsm', 'password');
 
-		$token = auth('api')->attempt($credentials);
+        $token = auth('api')->attempt($credentials);
 
-		return response(new AuthResource($token));
-	}
+        return response(new AuthResource($token));
+    }
 
-	public function forgotPassword(Request $request)
-	{
-		$request->validate([
-			'email' => [
-				Rule::requiredIf(fn () => !request()->has('gsm')),
-				'exists:users,email',
-				'email'
-			],
-			'gsm' => [
-				Rule::requiredIf(fn () => !request()->has('email')),
-				'exists:users,gsm',
-				'regex:/^([0-9\s\-\+\(\)]*)$/',
-				'size:12'
-			]
-		]);
+    public function forgotPassword(Request $request)
+    {
+        $request->validate([
+            'email' => [
+                Rule::requiredIf(fn () => !request()->has('gsm')),
+                'exists:users,email',
+                'email'
+            ],
+            'gsm' => [
+                Rule::requiredIf(fn () => !request()->has('email')),
+                'exists:users,gsm',
+                'regex:/^([0-9\s\-\+\(\)]*)$/',
+                'size:12'
+            ]
+        ]);
 
-		$user = User::where('email', $request->email)
-			->orWhere('gsm', $request->gsm)
-			->first();
+        $user = User::when($request->has('email'), function ($q) use ($request) {
+            $q->where('email', $request->email);
+        }, function ($q) use ($request) {
+            $q->orWhere('gsm', $request->gsm);
+        })->first();
 
-		$user->notify(new ResetPassword($request->has('email') ? 'mail' : 'sms'));
+        $user->notify(new ResetPassword($request->has('email') ? 'mail' : 'sms'));
 
-		return response([
-			"status"	=>	'success'
-		]);
-	}
+        return response([
+            "status"    =>    'success'
+        ]);
+    }
 
-	public function resetPassword(Request $request)
-	{
-		$request->validate([
-			'code' => 'required',
-			'password' => 'required|min:8|confirmed',
-			'email' => [
-				Rule::requiredIf(fn () => !request()->has('gsm')),
-				'exists:users,email',
-				'email'
-			],
-			'gsm' => [
-				Rule::requiredIf(fn () => !request()->has('email')),
-				'exists:users,gsm',
-				'regex:/^([0-9\s\-\+\(\)]*)$/',
-				'size:12'
-			]
-		]);
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'code' => 'required',
+            'password' => 'required|min:8|confirmed',
+            'email' => [
+                Rule::requiredIf(fn () => !request()->has('gsm')),
+                'exists:users,email',
+                'email'
+            ],
+            'gsm' => [
+                Rule::requiredIf(fn () => !request()->has('email')),
+                'exists:users,gsm',
+                'regex:/^([0-9\s\-\+\(\)]*)$/',
+                'size:12'
+            ]
+        ]);
 
-		$userQuery = User::select('id')->where('email', $request->email)
-			->orWhere('gsm', $request->gsm);
-		$user = $userQuery->first();
-		$notificationQuery = ModelsNotification::control(
-			type: 'Hasanablak\JwtAuth\Notifications\ResetPassword',
-			status: 'waiting',
-			code: $request->code,
-			notifiable_id: $user->id
-		);
+        $userQuery = User::when($request->has('email'), function ($q) use ($request) {
+            $q->where('email', $request->email);
+        }, function ($q) use ($request) {
+            $q->orWhere('gsm', $request->gsm);
+        });
+        $user = $userQuery->first();
 
-		$notificationQuery->firstOrFail();
+        $notificationQuery = ModelsNotification::control(
+            type: 'Hasanablak\JwtAuth\Notifications\ResetPassword',
+            status: 'waiting',
+            code: $request->code,
+            notifiable_id: $user->id
+        );
 
-		$notificationQuery->update(["data->status" => "finished"]);
+        $notificationQuery->firstOrFail();
 
-		$user->password = $request->password;
-		$user->save();
+        $notificationQuery->update(["data->status" => "finished"]);
 
-
-		$user->notify(new YourPasswordHasBeedChanged(
-			channel: $request->has('email') ? 'mail' : 'sms',
-			browser: $request->header('User-Agent'),
-			ip: $request->ip()
-		));
-
-
-		return response([
-			"status"	=>	'success'
-		]);
-	}
+        $user->password = $request->password;
+        $user->save();
 
 
-	public function show()
-	{
-		return response([
-			"status"	=>	"success",
-			"data"		=>	[
-				...auth('api')->user()->toArray(),
-				"settings" => auth('api')->user()->settingsAll
-			]
-		]);
-	}
+        $user->notify(new YourPasswordHasBeedChanged(
+            channel: $request->has('email') ? 'mail' : 'sms',
+            browser: $request->header('User-Agent'),
+            ip: $request->ip()
+        ));
 
-	public function update(Request $request)
-	{
-		$request->validate([
-			"avatar"	=> ['max:5000'],
-			"name"		=> ['required'],
-			"surname"	=> ['required'],
-			"username"	=>	["required", "min:3", "alpha_dash", "max:15", "unique:users,username," . auth('api')->id()],
-			//"password"	=> ['confirmed', 'string', 'min:6', 'current_password:api'],
-			"password"	=> ['confirmed', 'string', 'min:6'],
-			"current_password" => ['current_password:api', 'required_with:password']
-		]);
 
-		if ($request->avatar) {
-			$realName = 'default.png';
-			if ($request->avatar != 'deleted') {
-				$realName = Storage::disk('avatar')->put('', $request->avatar);
-			}
+        return response([
+            "status"    =>    'success'
+        ]);
+    }
 
-			User::where('id', auth('api')->id())
-				->update([
-					"avatar" =>  "/storage/avatar/" . $realName,
-				]);
-		}
 
-		if ($request->password) {
-			User::find(auth('api')->id())
-				->update([
-					"password"	=>	$request->password
-				]);
-		}
+    public function show()
+    {
+        return response([
+            "status"    =>    "success",
+            "data"        =>    [
+                ...auth('api')->user()->toArray(),
+                "settings" => auth('api')->user()->settingsAll
+            ]
+        ]);
+    }
 
-		User::where('id', auth('api')->id())
-			->update([
-				"name"			=> $request->name,
-				"surname"		=> $request->surname,
-				"username"		=> $request->username
-			]);
+    public function update(Request $request)
+    {
+        $request->validate([
+            "avatar"    => ['max:5000'],
+            "name"        => ['required'],
+            "surname"    => ['required'],
+            "username"    =>    ["required", "min:3", "alpha_dash", "max:15", "unique:users,username," . auth('api')->id()],
+            //"password"	=> ['confirmed', 'string', 'min:6', 'current_password:api'],
+            "password"    => ['confirmed', 'string', 'min:6'],
+            "current_password" => ['current_password:api', 'required_with:password']
+        ]);
 
-		return response([
-			"status"	=> "success",
-			"data"		=> [
-				...User::find(auth('api')->id())->toArray(),
-				"settings" => auth('api')->user()->settingsAll
-			]
-		]);
-	}
+        if ($request->avatar) {
+            $realName = 'default.png';
+            if ($request->avatar != 'deleted') {
+                $realName = Storage::disk('avatar')->put('', $request->avatar);
+            }
 
-	public function checkUsername(Request $request)
-	{
-		$request->validate([
-			"username"	=>	["required", "min:3", "alpha_dash:ascii", "max:15", "unique:users,username," . auth('api')->id()],
-		]);
-		return response([
-			"status"	=>	"success"
-		]);
-	}
+            User::where('id', auth('api')->id())
+                ->update([
+                    "avatar" =>  "/storage/avatar/" . $realName,
+                ]);
+        }
 
-	public function settingsGet()
-	{
-		return response([
-			"status"	=>	"success",
-			"data"		=>	auth('api')->user()->settingsAll
-		]);
-	}
+        if ($request->password) {
+            User::find(auth('api')->id())
+                ->update([
+                    "password"    =>    $request->password
+                ]);
+        }
 
-	public function settingsUpdate(Request $request)
-	{
-		#TODO: Request oluşturulacak, kullanıcının gönderdiği veriler kontrol edilecek.
-		$reqData = $request->all();
+        User::where('id', auth('api')->id())
+            ->update([
+                "name"            => $request->name,
+                "surname"        => $request->surname,
+                "username"        => $request->username
+            ]);
 
-		foreach ($reqData as $key => $value) {
-			UserSetting::updateOrCreate(
-				[
-					"user_id"	=> auth('api')->id(),
-					"key"		=> $key
-				],
-				[
-					"value"		=> $value
-				]
-			);
-		}
+        return response([
+            "status"    => "success",
+            "data"        => [
+                ...User::find(auth('api')->id())->toArray(),
+                "settings" => auth('api')->user()->settingsAll
+            ]
+        ]);
+    }
 
-		return response([
-			"status"	=> "success"
-		]);
-	}
+    public function checkUsername(Request $request)
+    {
+        $request->validate([
+            "username"    =>    ["required", "min:3", "alpha_dash:ascii", "max:15", "unique:users,username," . auth('api')->id()],
+        ]);
+        return response([
+            "status"    =>    "success"
+        ]);
+    }
+
+    public function settingsGet()
+    {
+        return response([
+            "status"    =>    "success",
+            "data"        =>    auth('api')->user()->settingsAll
+        ]);
+    }
+
+    public function settingsUpdate(Request $request)
+    {
+        #TODO: Request oluşturulacak, kullanıcının gönderdiği veriler kontrol edilecek.
+        $reqData = $request->all();
+
+        foreach ($reqData as $key => $value) {
+            UserSetting::updateOrCreate(
+                [
+                    "user_id"    => auth('api')->id(),
+                    "key"        => $key
+                ],
+                [
+                    "value"        => $value
+                ]
+            );
+        }
+
+        return response([
+            "status"    => "success"
+        ]);
+    }
 }
